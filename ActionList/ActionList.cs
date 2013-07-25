@@ -16,6 +16,7 @@ namespace ActionList
 		{
 			get { return _orderedActions.Count(); }
 		}
+
 		public void AddActions(IAction action)
 		{
 			var len = !_orderedActions.Any() ? 0 : _orderedActions.Count();
@@ -27,11 +28,18 @@ namespace ActionList
 		{
 			if (!_orderedActions.Any())
 				return;
+			bool blocked = false;
+			for (int index = 0; index < _orderedActions.Count; index++)
+			{
+				var orderedAction = _orderedActions.ToArray()[index];
+				if (blocked)
+					continue;
+				orderedAction.Value.Update();
+				blocked = orderedAction.Value.IsBlocking;
 
-			_orderedActions.First().Value.Update();
-			_orderedActions.First().Value.IsFinished = true;
-			_orderedActions.Remove(1);
-
+				if (orderedAction.Value.IsFinished)
+					_orderedActions.Remove(_orderedActions.First().Key);
+			}
 		}
 	}
 }

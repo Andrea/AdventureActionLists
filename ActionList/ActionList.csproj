@@ -45,8 +45,9 @@
   <ItemGroup>
     <Compile Include="Action.cs" />
     <Compile Include="ActionList.cs" />
-    <Compile Include="Class1.cs" />
+    <Compile Include="ActionListTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SyncAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
