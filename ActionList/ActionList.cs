@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ActionList
 {
-	public class ActionList
+	public class ActionList : IEnumerable<IAction>
 	{
 		private readonly SortedList<int, IAction> _orderedActions;
 
@@ -28,18 +29,30 @@ namespace ActionList
 		{
 			if (!_orderedActions.Any())
 				return;
-			bool blocked = false;
-			for (int index = 0; index < _orderedActions.Count; index++)
+			var blocked = false;
+			for (var index = 0; index < _orderedActions.Count; index++)
 			{
 				var orderedAction = _orderedActions.ToArray()[index];
 				if (blocked)
 					continue;
 				orderedAction.Value.Update();
 				blocked = orderedAction.Value.IsBlocking;
-
+				
 				if (orderedAction.Value.IsFinished)
+				{
 					_orderedActions.Remove(_orderedActions.First().Key);
+					index--;
+				}
 			}
+		}
+		public IEnumerator<IAction> GetEnumerator()
+		{
+			return  _orderedActions.Values.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 	}
 }

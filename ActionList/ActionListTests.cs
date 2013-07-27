@@ -56,19 +56,29 @@ namespace ActionList
 
 			Assert.AreEqual(1, _actionList.ActionCount);
 		}
-
+		
 		[Test]
 		public void When_finish_2x_nonblocking_use_sync_to_then_walk()
 		{
-			_actionList.AddActions(new NonBlockingAction());
-			_actionList.AddActions(new NonBlockingAction());
-			_actionList.AddActions(new SyncAction());
-			_actionList.AddActions(new WalkTo(new Vector2(), new Vector2(){X = 10}));
-
-			for (int i = 0; i < 20; i++)
+			var nonBlockingAction1 = new NonBlockingAction();
+			_actionList.AddActions(nonBlockingAction1);
+			var nonBlockingAction2 = new NonBlockingAction();
+			_actionList.AddActions(nonBlockingAction2);
+			var syncAction = new SyncAction(_actionList);
+			_actionList.AddActions(syncAction);
+			var walkTo = new WalkTo(new Vector2(), new Vector2{X = 10});
+			_actionList.AddActions(walkTo);
+			Assert.IsFalse(syncAction.IsFinished);
+			for (int i = 0; i < 10; i++)
 			{
 				_actionList.Update();
 			}
+			Assert.IsTrue(nonBlockingAction1.IsFinished);
+			Assert.IsTrue(nonBlockingAction2.IsFinished);
+			Assert.IsTrue(syncAction.IsFinished);
+			Assert.IsFalse(walkTo.StartedUpdating);
+			_actionList.Update();
+			Assert.IsTrue(walkTo.StartedUpdating);
 		}
 
 		private static ActionList CreateValidActionList()
